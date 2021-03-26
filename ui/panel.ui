@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ZoomToMgrsDockWidgetBase</class>
+ <widget class="QDockWidget" name="ZoomToMgrsDockWidgetBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>534</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>405</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>524287</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>OAW plugin</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_new">
+       <attribute name="title">
+        <string>New</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QFormLayout" name="formLayout">
+          <property name="topMargin">
+           <number>20</number>
+          </property>
+          <property name="bottomMargin">
+           <number>50</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="lbl_raster">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Raster:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="cbo_raster"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QDialogButtonBox" name="button_box_new">
+          <property name="standardButtons">
+           <set>QDialogButtonBox::Apply</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_monitor">
+       <attribute name="title">
+        <string>Monitor</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QTableView" name="table"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_settings">
+       <attribute name="title">
+        <string>Settings</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QFormLayout" name="formLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lbl_max_jobs">
+            <property name="text">
+             <string>Max concurrent jobs:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="spn_max_jobs">
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>5</number>
+            </property>
+            <property name="value">
+             <number>2</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lbl_gdal_threads">
+            <property name="text">
+             <string>GDAL threads:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QgsSpinBox" name="spn_gdal_threads"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lbl_min_gcp">
+            <property name="text">
+             <string>Minimum number of GCPs:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QgsSpinBox" name="spn_min_gcp"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Source folder:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QgsFileWidget" name="src_folder"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Staging folder:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QgsFileWidget" name="stg_folder"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="lbl_remove_tif_after_upload">
+            <property name="minimumSize">
+             <size>
+              <width>250</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Remove intermediate Tif file (after upload):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QCheckBox" name="chk_remove_tif_after_upload">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="txt_remote_address"/>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="lbl_remote_address">
+            <property name="text">
+             <string>Remote Address:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="lbl_remote_authid">
+            <property name="text">
+             <string>Remote AuthID</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLineEdit" name="txt_remote_authid"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>155</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QDialogButtonBox" name="buttonBox">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="standardButtons">
+           <set>QDialogButtonBox::Discard|QDialogButtonBox::Save</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>qgsspinbox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
