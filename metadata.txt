@@ -1,0 +1,21 @@
+[general]
+name=OAW-GeoRectify-GeoTiff
+qgisMinimumVersion=3.14
+qgisMaximumVersion=3.99
+description=Tools to georectify (and optimize) GeoTif rasters.
+version=version 1.0
+author=Christian R. Picone
+email=ch.picone@gmail.com
+about=This plugin help the user to manage georectify process of GeoTiff.
+    Each process is executed in background and a monitor page is provided to check the status of all started processes.
+tracker=https://github.com/geosolutions-it/oaw-georectify-process-qgis/issues
+repository=https://github.com/geosolutions-it/oaw-georectify-process-qgis
+homepage=https://github.com/geosolutions-it/oaw-georectify-process-qgis/blob/master/README.md
+tags=geotif,raster,oaw
+category=Plugins
+icon=icon.png
+experimental=False
+deprecated=False
+plugin_dependencies=geotiflib==1.0.0
+changelog=
+    1.0 - First stable release
