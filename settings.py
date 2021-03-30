@@ -1,4 +1,5 @@
 import os
+import json
 from qgis.PyQt.QtCore import QSettings, Qt
 from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
 from qgis.core import QgsMessageLog, Qgis
@@ -40,6 +41,24 @@ class Settings:
 
     def get_attribute(self, attribute, default):
         return self._settings.value(self._prefix + attribute, default)
+
+    def __str__(self):
+        return self.get_string()
+
+    def get_string(self):
+        return json.dumps(self.get_dict())
+
+    def get_dict(self):
+        return {
+            "max_concurrent_jobs": self.max_concurrent_jobs,
+            "gdal_threads": self.gdal_threads,
+            "min_gcp": self.min_gcp,
+            "source_folder": self.source_folder,
+            "staging_folder": self.staging_folder,
+            "remove_file_after": self.remove_file_after,
+            "remote_address": self.remote_address,
+            "remote_authid": self.remote_authid
+        }
 
 
 class SettingsWidget:
@@ -90,3 +109,9 @@ class SettingsWidget:
 
     def get_attribute(self, attribute, default):
         return self._settings.get_attribute(attribute, default)
+
+    def get_string(self):
+        return self._settings.get_string()
+
+    def get_dict(self):
+        return self._settings.get_dict()
