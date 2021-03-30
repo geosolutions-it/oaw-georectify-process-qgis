@@ -5,7 +5,7 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from .panel import PanelWidget
 
-MENU_NAME = "OAW"
+CODE = "OAW"
 
 
 class OAWPlugin:
@@ -13,7 +13,7 @@ class OAWPlugin:
     def __init__(self, iface):
         self.iface = iface
         self.canvas = iface.mapCanvas()
-        self.toolbar = self.iface.addToolBar(MENU_NAME + ' Toolbar')
+        self.toolbar = self.iface.addToolBar(CODE + ' Toolbar')
         self.toolbar.setObjectName('oaw_toolbar')
         self.help_action = None
         self.dialog = None
@@ -28,10 +28,10 @@ class OAWPlugin:
         self.help_action = QAction(icon, "Help", self.iface.mainWindow())
         self.help_action.setObjectName('oaw_help')
         self.help_action.triggered.connect(self.help)
-        self.iface.addPluginToMenu(MENU_NAME, self.help_action)
+        self.iface.addPluginToMenu(CODE, self.help_action)
 
     def unload(self):
-        self.iface.removePluginMenu(MENU_NAME, self.help_action)
+        self.iface.removePluginMenu(CODE, self.help_action)
         self.iface.removeDockWidget(self.dialog)
         del self.toolbar
         self.dialog = None

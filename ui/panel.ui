@@ -42,7 +42,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_new">
        <attribute name="title">
@@ -76,6 +76,16 @@
          </layout>
         </item>
         <item>
+         <widget class="QCheckBox" name="chk_watch_src_folder">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Watch source folder</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -101,9 +111,29 @@
        <attribute name="title">
         <string>Monitor</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QTableView" name="table"/>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QDialogButtonBox" name="button_box_monitor">
+          <property name="standardButtons">
+           <set>QDialogButtonBox::Retry</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -171,7 +201,11 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QgsFileWidget" name="src_folder"/>
+           <widget class="QgsFileWidget" name="src_folder">
+            <property name="storageMode">
+             <enum>QgsFileWidget::GetDirectory</enum>
+            </property>
+           </widget>
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label">
@@ -181,7 +215,11 @@
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QgsFileWidget" name="stg_folder"/>
+           <widget class="QgsFileWidget" name="stg_folder">
+            <property name="storageMode">
+             <enum>QgsFileWidget::GetDirectory</enum>
+            </property>
+           </widget>
           </item>
           <item row="5" column="0">
            <widget class="QLabel" name="lbl_remove_tif_after_upload">
@@ -242,7 +280,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QDialogButtonBox" name="buttonBox">
+         <widget class="QDialogButtonBox" name="button_box_settings">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
