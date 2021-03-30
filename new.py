@@ -1,6 +1,8 @@
 import os
 import glob
+import json
 import time
+from .scheduler import Scheduler
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
@@ -30,11 +32,13 @@ class ObserverTask(QgsTask):
                     tag="OAW", level=Qgis.Info)
                 if self.isCanceled():
                     self.stopped()
+                    self.observer.stop()
                     return False
                 time.sleep(self._interval)
         except KeyboardInterrupt:
             self.observer.stop()
             self.observer.join()
+        self.observer.stop()
         return True
 
 
@@ -62,6 +66,7 @@ class NewWidget:
         self._folder = ""
         self.get_raster_list()
         self._container.chk_watch_src_folder.stateChanged.connect(self.watch_state_changed)
+        self._container.button_box_new.button(QDialogButtonBox.Apply).clicked.connect(self.queue_raster)
         self.watch_state_changed()
 
     def get_folder(self):
@@ -73,6 +78,7 @@ class NewWidget:
         if state == Qt.Unchecked and self.observer_task is not None:
             self.observer_task.stop()
         elif state == Qt.Checked:
+            self.get_raster_list()
             self.set_observer()
             self.observer_task = ObserverTask("OAW Raster observer", self.observer)
             QgsApplication.taskManager().addTask(self.observer_task)
@@ -92,6 +98,8 @@ class NewWidget:
         Get the the list of rasters (and points) from the source folder directory
         :return:
         """
+        self._raster_list = []
+        self._container.cbo_raster.clear()
         os.chdir(self.get_folder())
         files = sorted(glob.glob("*.tif.points"))
         for file in files:
@@ -173,3 +181,20 @@ class NewWidget:
             QgsMessageLog.logMessage(
                 str(e),
                 tag="OAW", level=Qgis.Warning)
+
+    def queue_raster(self):
+        raster = self._container.cbo_raster.currentText()
+        if raster == "" or raster is None:
+            return
+        QgsMessageLog.logMessage(
+            f"NewWidget.queue_raster => %s" % raster,
+            tag="OAW", level=Qgis.Info)
+
+        options = self._container.get_settings().get_dict()
+        options["name"] = raster
+        Scheduler.GET_INSTANCE().queue(options)
+        if self._container.chk_watch_src_folder.checkState() == Qt.Unchecked:
+            self.get_raster_list()
+        QgsMessageLog.logMessage(
+            f"NewWidget.queue_raster => %s" % json.dumps(options),
+            tag="OAW", level=Qgis.Info)
