@@ -99,11 +99,14 @@ class NewWidget:
         :return:
         """
         self._raster_list = []
-        self._container.cbo_raster.clear()
-        os.chdir(self.get_folder())
-        files = sorted(glob.glob("*.tif.points"))
-        for file in files:
-            self.add_raster(file)
+        try:
+            self._container.cbo_raster.clear()
+            os.chdir(self.get_folder())
+            files = sorted(glob.glob("*.tif.points"))
+            for file in files:
+                self.add_raster(file)
+        except:
+            pass
 
     def check_raster_file(self, file):
         pts_file = ""
