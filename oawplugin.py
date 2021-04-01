@@ -4,6 +4,8 @@ from qgis.PyQt.QtCore import Qt, QUrl
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from .panel import PanelWidget
+from .executor import Executor
+from .scheduler import Scheduler
 
 CODE = "OAW"
 
@@ -17,6 +19,8 @@ class OAWPlugin:
         self.toolbar.setObjectName('oaw_toolbar')
         self.help_action = None
         self.dialog = None
+        self.executor = Executor.GET_INSTANCE()
+        self.scheduler = Scheduler.GET_INSTANCE()
 
     def initGui(self):
         self.dialog = PanelWidget(self.iface, self.iface.mainWindow())

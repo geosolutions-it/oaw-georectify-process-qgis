@@ -80,7 +80,7 @@ class NewWidget:
         elif state == Qt.Checked:
             self.get_raster_list()
             self.set_observer()
-            self.observer_task = ObserverTask("OAW Raster observer", self.observer)
+            self.observer_task = ObserverTask("OAW Watcher source folder", self.observer)
             QgsApplication.taskManager().addTask(self.observer_task)
         QgsMessageLog.logMessage(
             "Watch state: " + str(state),
