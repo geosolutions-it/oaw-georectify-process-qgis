@@ -16,6 +16,6 @@ category=Plugins
 icon=icon.png
 experimental=False
 deprecated=False
-plugin_dependencies=watchdog==2.0.2,geotiflib==1.0.6
+plugin_dependencies=watchdog==2.0.2,pysftp==0.2.9,geotiflib==1.0.6
 changelog=
     1.0 - First stable release

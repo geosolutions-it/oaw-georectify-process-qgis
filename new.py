@@ -31,9 +31,8 @@ class ObserverTask(QgsTask):
                     "ObserverTask -> watching...",
                     tag="OAW", level=Qgis.Info)
                 if self.isCanceled():
-                    self.stopped()
                     self.observer.stop()
-                    return False
+                    return True
                 time.sleep(self._interval)
         except KeyboardInterrupt:
             self.observer.stop()
@@ -51,6 +50,9 @@ class NewWidget:
         """
         QgsMessageLog.logMessage("Initialize NewWidget", tag="OAW", level=Qgis.Info)
         self._container = container
+        self._container.lbl_slots_count.setText(
+            str(self._container.get_settings().get_attribute('MaxConcurrentJobs', ''))
+        )
         patterns = ["*.tif.points", "*.tif"]
         ignore_patterns = []
         ignore_directories = True
@@ -64,13 +66,20 @@ class NewWidget:
         self.observer_task = None
         self._raster_list = []
         self._folder = ""
-        self.get_raster_list()
         self._container.chk_watch_src_folder.stateChanged.connect(self.watch_state_changed)
         self._container.button_box_new.button(QDialogButtonBox.Apply).clicked.connect(self.queue_raster)
         self.watch_state_changed()
+        self._current_settings = None
+
+    def on_settings_changed(self, settings):
+        self._current_settings = settings
+        self.get_raster_list()
+
+    def on_slots_changed(self, data):
+        self._container.lbl_slots_count.setText(str(data["value"]))
 
     def get_folder(self):
-        self._folder = self._container.get_settings().get_attribute('SourceFolder', '')
+        self._folder = self._current_settings["source_folder"]
         return self._folder
 
     def watch_state_changed(self):
@@ -188,6 +197,7 @@ class NewWidget:
     def queue_raster(self):
         raster = self._container.cbo_raster.currentText()
         if raster == "" or raster is None:
+            self._container.push_message("No raster selected!", level=Qgis.Warning)
             return
         QgsMessageLog.logMessage(
             f"NewWidget.queue_raster => %s" % raster,
@@ -201,3 +211,4 @@ class NewWidget:
         QgsMessageLog.logMessage(
             f"NewWidget.queue_raster => %s" % json.dumps(options),
             tag="OAW", level=Qgis.Info)
+        self._container.push_message("Raster %s queued!" % raster, level=Qgis.Info)

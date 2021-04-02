@@ -1,11 +1,14 @@
 import os
 import json
 import time
+import pysftp
 import sqlite3
 import threading
 from geotiflib.georectify import GeoRectifyFactory
+from geotiflib.eventhook import EventHook
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsApplication, QgsAuthMethodConfig, QgsMessageLog, Qgis, QgsTask
+from .settings import Settings
 
 INSTANCE = None
 
@@ -16,7 +19,7 @@ class GeoRectifyTask(threading.Thread):
         threading.Thread.__init__(self)
         self.rowid = rowid
         self.name = name
-        self.db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "oaw.db")
+        self.db_path = Settings.GET_DB_PATH()
         #desc = "OAW GeoRectify: %s" % name
         #QgsTask.__init__(self, desc, QgsTask.CanCancel)
         self.handlers = handlers
@@ -30,6 +33,10 @@ class GeoRectifyTask(threading.Thread):
             time.sleep(0.1)
             self.status = status
             statement = "UPDATE oaw_tasks SET status = ?, message = ? WHERE id = ?"
+            if status == 'running':
+                statement = "UPDATE oaw_tasks SET status = ?, message = ?, start_date = CURRENT_TIMESTAMP WHERE id = ?"
+            elif status == 'failed' or status == 'completed':
+                statement = "UPDATE oaw_tasks SET status = ?, message = ?, end_date = CURRENT_TIMESTAMP WHERE id = ?"
             connection = sqlite3.connect(self.db_path)
             with connection:
                 cursor = connection.cursor()
@@ -57,12 +64,15 @@ class GeoRectifyTask(threading.Thread):
 
             input_tif = os.path.join(self.options["staging_folder"], self.name + ".tif")
             scripts_folder = os.path.join(QgsApplication.prefixPath(), "..", "Python37/Scripts")
-            geo_rectify = GeoRectifyFactory.create(input=input_tif, qgis_scripts=scripts_folder)
+            geo_rectify = GeoRectifyFactory.create(
+                input=input_tif,
+                qgis_scripts=scripts_folder,
+                min_points=self.options["min_points"],
+                gdal_threads=self.options["gdal_threads"]
+            )
             geo_rectify.on_progress += self.on_progress
             geo_rectify.process()
-            self.set_status('running', 'georectify process completed! Starting uploading the raster on the server')
-            # call FTP task
-            """
+
             auth_id = self.options["remote_authid"]
             auth_manager = QgsApplication.authManager()
             auth_cfg = QgsAuthMethodConfig()
@@ -70,26 +80,34 @@ class GeoRectifyTask(threading.Thread):
             if auth_cfg.id():
                 username = auth_cfg.config('username', '')
                 password = auth_cfg.config('password', '')
+                uri = auth_cfg.uri()
                 # call FTP task
+                QgsMessageLog.logMessage(f"GeoRectifyTask.run, URI: %s" % str(uri), tag="OAW",
+                                         level=Qgis.Info)
                 QgsMessageLog.logMessage(f"GeoRectifyTask.run, username: %s" % str(username), tag="OAW",
                                          level=Qgis.Info)
                 QgsMessageLog.logMessage(f"GeoRectifyTask.run, password: %s" % "***********", tag="OAW",
                                          level=Qgis.Info)
+                # upload file via SFTP
+                output_tif = input_tif.replace(".tif", "_grf_fin.tif")
+                remote_folder = "public"
+                with pysftp.Connection('hostname', username=username, password=password) as sftp:
+                    with sftp.cd(remote_folder):  # temporarily chdir to public
+                        sftp.put(output_tif, remotepath=remote_folder + "/" + self.name + ".tif")
 
                 # Remove intermediate file (if requested)
                 if self.options["remove_file_after"] == Qt.Checked:
-                    pass
-                    
-                self.set_status('completed', 'done')
+                    os.remove(output_tif)
+                    QgsMessageLog.logMessage(f"GeoRectifyTask.run, removing intermediate file: %s" % output_tif,
+                                             tag="OAW", level=Qgis.Info)
             else:
-                self.exception = Exception("Failed to extract information from the QGIS authentication manager")
-                self.set_status('failed', "Failed to extract information from the QGIS authentication manager")
-            """
+                raise Exception("Failed to extract information from the QGIS authentication manager using authid: %s"
+                                % auth_id)
             self.set_status('completed', 'done')
         except Exception as e:
             self.exception = e
             self.set_status('failed', str(e))
-            #QgsMessageLog.logMessage(f"GeoRectifyTask.run, exception: %s" % str(e), tag="OAW", level=Qgis.Warning)
+            QgsMessageLog.logMessage(f"GeoRectifyTask.run, exception: %s" % str(e), tag="OAW", level=Qgis.Warning)
         self.handlers["on_completed"](self)
         QgsMessageLog.logMessage(f"GeoRectifyTask.run, result: %s" % self.status, tag="OAW", level=Qgis.Info)
         return self.status == 'completed'
@@ -101,7 +119,7 @@ class DeQueueTask(QgsTask):
     """
     def __init__(self, desc, callback):
         QgsTask.__init__(self, desc, QgsTask.CanCancel)
-        self.db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "oaw.db")
+        self.db_path = Settings.GET_DB_PATH()
         self._interval = 10
         self.available_slots = 5
         self.statement_1 = "UPDATE oaw_tasks SET status = ? WHERE id in (" \
@@ -147,7 +165,7 @@ class DeQueueTask(QgsTask):
             while True:
                 QgsMessageLog.logMessage("DeQueueTask -> checking...", tag="OAW", level=Qgis.Info)
                 if self.isCanceled():
-                    return False
+                    return True
                 self.check_for_tasks()
                 time.sleep(self._interval)
         except Exception as e:
@@ -167,6 +185,8 @@ class Executor:
         self.max_slots = 4
         self.running_tasks = 0
         self.slots = {}
+        self._container = None
+        self.on_slots_changed = EventHook()
         self.task = DeQueueTask("OAW Executor", self.on_tasks_to_start)
         QgsMessageLog.logMessage(f"Scheduler.queue => created InsertDbTask", tag="OAW", level=Qgis.Info)
         QgsApplication.taskManager().addTask(self.task)
@@ -178,16 +198,23 @@ class Executor:
             INSTANCE = Executor()
         return INSTANCE
 
+    def on_settings_changed(self, settings):
+        self.lock.acquire()
+        self.max_slots = settings["max_concurrent_jobs"]
+        self.update_available_slots(0)
+        self.lock.release()
+
     def update_available_slots(self, delta):
         """
         Update status of available slots to execute concurrent tasks
         :param delta: number of slots to update (negative: new tasks started, positive: existing tasks finieshed)
         :return:
         """
-        self.running_tasks += delta
+        self.running_tasks -= delta
         available_tasks = self.max_slots - self.running_tasks
         if available_tasks < 0:
             available_tasks = 0
+        self.on_slots_changed.fire({"value": available_tasks})
         self.task.set_available_slots(available_tasks)
 
     def start_new_task(self, task_info):
@@ -205,6 +232,7 @@ class Executor:
         #QgsApplication.taskManager().addTask(task)
         if task is not None:
             task.start()
+            #self._container.push_message("Processing started: %s" % task_info[1], level=Qgis.Info)
 
     def on_tasks_to_start(self, task_info_list):
         for task_info in task_info_list:
@@ -226,3 +254,4 @@ class Executor:
             self.update_available_slots(1)
         finally:
             self.lock.release()
+

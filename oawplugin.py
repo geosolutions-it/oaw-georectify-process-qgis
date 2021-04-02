@@ -27,6 +27,10 @@ class OAWPlugin:
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dialog)
         self.dialog.hide()
 
+        self.executor.on_slots_changed += self.dialog.widget_new.on_slots_changed
+        self.dialog.widget_settings.on_changed += self.executor.on_settings_changed
+        self.dialog.widget_settings.init_widget()
+
         # Help
         icon = QIcon(os.path.dirname(__file__) + '/images/help.png')
         self.help_action = QAction(icon, "Help", self.iface.mainWindow())

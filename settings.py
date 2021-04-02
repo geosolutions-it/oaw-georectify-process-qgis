@@ -1,5 +1,6 @@
 import os
 import json
+from geotiflib.eventhook import EventHook
 from qgis.PyQt.QtCore import QSettings, Qt
 from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
 from qgis.core import QgsMessageLog, Qgis
@@ -20,7 +21,6 @@ class Settings:
         self.source_folder = self._settings.value(self._prefix + 'SourceFolder', "")
         self.staging_folder = self._settings.value(self._prefix + 'StagingFolder', "")
         self.remove_file_after = int(self._settings.value(self._prefix + 'RemoveFileAfter', Qt.Unchecked))
-        self.remote_address = self._settings.value(self._prefix + 'RemoteAddress', "")
         self.remote_authid = self._settings.value(self._prefix + 'RemoteAuthID', "")
 
     def save(self):
@@ -35,7 +35,6 @@ class Settings:
         self._settings.setValue(self._prefix + 'SourceFolder', self.source_folder)
         self._settings.setValue(self._prefix + 'StagingFolder', self.staging_folder)
         self._settings.setValue(self._prefix + 'RemoveFileAfter', self.remove_file_after)
-        self._settings.setValue(self._prefix + 'RemoteAddress', self.remote_address)
         self._settings.setValue(self._prefix + 'RemoteAuthID', self.remote_authid)
         QgsMessageLog.logMessage("Settings.save(). Done!", tag="OAW", level=Qgis.Info)
 
@@ -52,13 +51,16 @@ class Settings:
         return {
             "max_concurrent_jobs": self.max_concurrent_jobs,
             "gdal_threads": self.gdal_threads,
-            "min_gcp": self.min_gcp,
+            "min_points": self.min_gcp,
             "source_folder": self.source_folder,
             "staging_folder": self.staging_folder,
             "remove_file_after": self.remove_file_after,
-            "remote_address": self.remote_address,
             "remote_authid": self.remote_authid
         }
+
+    @staticmethod
+    def GET_DB_PATH():
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "oaw.db")
 
 
 class SettingsWidget:
@@ -74,7 +76,7 @@ class SettingsWidget:
         QgsMessageLog.logMessage("Initialize SettingsWidget", tag="OAW", level=Qgis.Info)
         self._settings = Settings()
         self._container = container
-        self.init_widget()
+        self.on_changed = EventHook()
 
     def init_widget(self):
         """
@@ -88,8 +90,8 @@ class SettingsWidget:
         self._container.src_folder.setFilePath(self._settings.source_folder)
         self._container.stg_folder.setFilePath(self._settings.staging_folder)
         self._container.chk_remove_tif_after_upload.setCheckState(self._settings.remove_file_after)
-        self._container.txt_remote_address.setText(self._settings.remote_address)
         self._container.txt_remote_authid.setText(self._settings.remote_authid)
+        self.on_changed.fire(self._settings.get_dict())
 
     def on_click_save(self):
         """
@@ -103,9 +105,10 @@ class SettingsWidget:
         self._settings.source_folder = self._container.src_folder.filePath()
         self._settings.staging_folder = self._container.stg_folder.filePath()
         self._settings.remove_file_after = self._container.chk_remove_tif_after_upload.checkState()
-        self._settings.remote_address = self._container.txt_remote_address.text()
         self._settings.remote_authid = self._container.txt_remote_authid.text()
         self._settings.save()
+        self.on_changed.fire(self._settings.get_dict())
+        self._container.push_message("Settings saved!", level=Qgis.Info)
 
     def get_attribute(self, attribute, default):
         return self._settings.get_attribute(attribute, default)

@@ -2,6 +2,7 @@ import os
 import json
 import sqlite3
 from qgis.core import QgsApplication, QgsMessageLog, Qgis, QgsTask
+from .settings import Settings
 
 INSTANCE = None
 
@@ -59,7 +60,7 @@ class Scheduler:
         """
         Constructor of the class
         """
-        self.db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "oaw.db")
+        self.db_path = Settings.GET_DB_PATH()
         QgsMessageLog.logMessage(
             f"Scheduler.__init__ => %s" % str(self.db_path),
             tag="OAW", level=Qgis.Info)
