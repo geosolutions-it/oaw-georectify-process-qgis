@@ -7,6 +7,16 @@
             background-color: #F8F8F8;
             padding: 0.7em;
         }
+        .header img {
+          float: left;
+          width: 48px;
+          height: 48px;
+        }
+        .header h1 {
+          position: relative;
+          top: 18px;
+          left: 10px;
+        }
         pre {
             margin:1em 0;
             font-size:12px;
@@ -36,5 +46,100 @@
     </style>
 </head>
 <body>
-    <h1>OAW Plugin</h1>
+
+    <div class="header">
+        <img src="./images/help-icon.png" height="48px">
+        <h1>OAW Plugin</h1>
+    </div>
+    <br/>
+
+    <h2>Description</h2>
+    This plugin allow the user to pre-process raster images (Tif format) before to upload them in the server
+    to be scheduled for the final step of publish them on GeoNode/GeoServer.<br/>
+    The plugin optimize a raster (*.tif) with GCP information (*.tif.points) using GDAL tools.<br/>
+    The optimization steps are the following:
+    <ul>
+        <li>Add GCP information to the raster</li>
+        <li>Warp the image</li>
+        <li>Separate the 3 bands of the image</li>
+        <li>Create the binary mask</li>
+        <li>Recombine the 3 bands with the mask</li>
+        <li>Add JPEG compression</li>
+        <li>Add overviews to the image</li>
+    </ul>
+
+    <h2>Panel</h2>
+    To show/hide the UI panel of this plugin we have to right click on the toolbars' area of QGIS and then select/deleselct the "OAW plugin panel" item.<br/>
+    <img src="./images/activate-panel.png" height="200px">
+    <h3>Settings</h3>
+    The panel of the plugin contains a specific area where the user can specify some parameters for the plugin:<br/>
+    <img src="./images/tab-settings.png" height="350px"><br/>
+    The configurable parameters are:
+    <ul>
+        <li><b>Max concurrent jobs</b>: maximum number of concurrent tasks to be processed by the system</li>
+        <li><b>GDAL threads</b>: number of threads to be used with some GDAL commands</li>
+        <li><b>Minimum number of GCPs</b>: minimum number of GCP to be used for the georectify/optimization process.<br/>
+            If the raster has less then this value the process will fail for this reason.
+        </li>
+        <li><b>Source folder</b>: it is the path of the folder containing the raster to be processed (*.tif + *.tif.points)</li>
+        <li><b>Staging folder</b>: it is the path where the system move original files (*.tif + *.tif.points)
+            when the task is marked as "reserved" and it is going to be started by the system.<br/>
+            In this path the process will put also temporary files.
+        </li>
+        <li><b>Remove intermediate file (after upload)</b>: at the end of the optimization process (in the staging folder)
+            for a specific raster we will have 3 files:
+            <ul>
+                <li>original tif</li>
+                <li>original tif.points</li>
+                <li>optimized tif (GeoTif)</li>
+            </ul>
+            The system after sent the optimized tif to the server (via SFTP) can remove automatically the optimized tif if required.
+        </li>
+    </ul>
+
+
+    <h3>Monitor</h3>
+    The panel of the plugin contains a specific area where the user can monitor the processing of the scheduled images:<br/>
+    <img src="./images/tab-monitor.png" height="300px"><br/>
+    The main table in the monitor page has the following fields:
+    <ul>
+        <li><b>ID</b>: identifier of the task</li>
+        <li><b>NAME</b>: name of the raster (it should be the BIBID)</li>
+        <li><b>STATUS</b>: status of the task. <br/>
+            The available status for a process are:
+            <ul>
+                <li><b>Waiting</b>: the task is queued and it is waiting to be processed by the system</li>
+                <li><b>Reserved</b>: the executor system promote the task to be executed in few moments</li>
+                <li><b>Running</b>: the task is currently processed by the system</li>
+                <li><b>Failed</b>: the task is stopped cause an error (we can read the details of the problem in the message field)</li>
+                <li><b>Completed</b>: the task is completed correctly</li>
+            </ul>
+        </li>
+        <li><b>START</b>: date/time when the task was started by the system</li>
+        <li><b>END</b>: date/time when the task was completed/stopped by the system</li>
+        <li><b>OPTIONS</b>: it contains the information of the settings at the time of the task was queued</li>
+        <li><b>MESSAGE</b>: it contains information about the processing. Generally useful in case of failed task</li>
+    </ul>
+    At the bottom of the monito page we have:
+    <ul>
+        <li>on the <b>LEFT</b> side: the number of total tasks</li>
+        <li>on the <b>RIGHT</b> side: the pagination buttons</li>
+    </ul>
+    <h3>New</h3>
+    The panel of the plugin contains a specific area where the user schedule a new raster to the system:<br/>
+    <img src="./images/tab-new.png" height="350px"><br/>
+    In the "drop-down" menu the user can select available raster to be processed by the system.<br/>
+    The system add rasters in this menu looking in the source folder path for tif images with the relative GCP file (tif.points).<br/>
+    The "watch source folder" flag asks the system to continously monitor changes in this folder (for new/deleted/renamed files) and update the drop-down menu list.<br/>
+    If this option is not enabled the list is filled just when the QGIS application starts.<br/>
+    The apply button add the selected raster in the queue of the system.<br/>
+    The "available slots" label informs the user about the number of tasks that the system can start in that specific moment.<br>
+
+    <h2>Logging</h2>
+    The plugin logs information messages in its own tab in the Log Messages area of QGIS.<br/>
+    To display this area it is necessary to activate it (Log Messages) from the panels menu
+    (follow the same instructions provided to activate the OAW panel).<br/>
+    The OAW tab shows detailed information about what the plugin is doing:<br/>
+    <img src="./images/log-messages.png" height="300px">
+
 </body>
