@@ -32,7 +32,7 @@ class OAWPlugin:
         self.dialog.widget_settings.init_widget()
 
         # Help
-        icon = QIcon(os.path.dirname(__file__) + '/images/help.png')
+        icon = QIcon(os.path.dirname(__file__) + '/images/help-icon.png')
         self.help_action = QAction(icon, "Help", self.iface.mainWindow())
         self.help_action.setObjectName('oaw_help')
         self.help_action.triggered.connect(self.help)
