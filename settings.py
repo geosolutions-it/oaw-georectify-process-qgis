@@ -21,6 +21,7 @@ class Settings:
         self.source_folder = self._settings.value(self._prefix + 'SourceFolder', "")
         self.staging_folder = self._settings.value(self._prefix + 'StagingFolder', "")
         self.remove_file_after = int(self._settings.value(self._prefix + 'RemoveFileAfter', Qt.Unchecked))
+        self.remote_folder = self._settings.value(self._prefix + 'RemoteFolder', "")
         self.remote_authid = self._settings.value(self._prefix + 'RemoteAuthID', "")
 
     def save(self):
@@ -35,6 +36,7 @@ class Settings:
         self._settings.setValue(self._prefix + 'SourceFolder', self.source_folder)
         self._settings.setValue(self._prefix + 'StagingFolder', self.staging_folder)
         self._settings.setValue(self._prefix + 'RemoveFileAfter', self.remove_file_after)
+        self._settings.setValue(self._prefix + 'RemoteFolder', self.remote_folder)
         self._settings.setValue(self._prefix + 'RemoteAuthID', self.remote_authid)
         QgsMessageLog.logMessage("Settings.save(). Done!", tag="OAW", level=Qgis.Info)
 
@@ -55,6 +57,7 @@ class Settings:
             "source_folder": self.source_folder,
             "staging_folder": self.staging_folder,
             "remove_file_after": self.remove_file_after,
+            "remote_folder": self.remote_folder,
             "remote_authid": self.remote_authid
         }
 
@@ -90,6 +93,7 @@ class SettingsWidget:
         self._container.src_folder.setFilePath(self._settings.source_folder)
         self._container.stg_folder.setFilePath(self._settings.staging_folder)
         self._container.chk_remove_tif_after_upload.setCheckState(self._settings.remove_file_after)
+        self._container.txt_remote_folder.setText(self._settings.remote_folder)
         self._container.txt_remote_authid.setText(self._settings.remote_authid)
         self.on_changed.fire(self._settings.get_dict())
 
@@ -105,6 +109,7 @@ class SettingsWidget:
         self._settings.source_folder = self._container.src_folder.filePath()
         self._settings.staging_folder = self._container.stg_folder.filePath()
         self._settings.remove_file_after = self._container.chk_remove_tif_after_upload.checkState()
+        self._settings.remote_folder = self._container.txt_remote_folder.text()
         self._settings.remote_authid = self._container.txt_remote_authid.text()
         self._settings.save()
         self.on_changed.fire(self._settings.get_dict())

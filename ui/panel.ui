@@ -42,7 +42,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_new">
        <attribute name="title">
@@ -505,15 +505,25 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="lbl_remote_authid">
             <property name="text">
              <string>Remote AuthID</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="7" column="1">
            <widget class="QLineEdit" name="txt_remote_authid"/>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="txt_remote_folder"/>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Remote folder:</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -559,6 +569,22 @@
    <header>qgsspinbox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>spn_max_jobs</tabstop>
+  <tabstop>spn_gdal_threads</tabstop>
+  <tabstop>spn_min_gcp</tabstop>
+  <tabstop>chk_remove_tif_after_upload</tabstop>
+  <tabstop>txt_remote_folder</tabstop>
+  <tabstop>txt_remote_authid</tabstop>
+  <tabstop>table_monitor</tabstop>
+  <tabstop>cbo_raster</tabstop>
+  <tabstop>chk_watch_src_folder</tabstop>
+  <tabstop>btn_page_before</tabstop>
+  <tabstop>btn_page_after</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>btn_page_first</tabstop>
+  <tabstop>btn_page_last</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

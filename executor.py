@@ -90,8 +90,10 @@ class GeoRectifyTask(threading.Thread):
                                          level=Qgis.Info)
                 # upload file via SFTP
                 output_tif = input_tif.replace(".tif", "_grf_fin.tif")
-                remote_folder = "public"
-                with pysftp.Connection('hostname', username=username, password=password) as sftp:
+                remote_folder = self.options["remote_folder"] if "remote_folder" in self.options else "public"
+                cnopts = pysftp.CnOpts()
+                cnopts.hostkeys = None
+                with pysftp.Connection(uri, username=username, password=password, cnopts=cnopts) as sftp:
                     with sftp.cd(remote_folder):  # temporarily chdir to public
                         sftp.put(output_tif, remotepath=remote_folder + "/" + self.name + ".tif")
 
