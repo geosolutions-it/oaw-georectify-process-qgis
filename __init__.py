@@ -12,6 +12,13 @@ except ImportError:
     import geotiflib
 
 try:
+    import paramiko
+except ImportError:
+    path = os.path.join(lib_dir, 'paramiko-2.7.2-py2.py3-none-any.whl')
+    sys.path.append(path)
+    import paramiko
+
+try:
     import pysftp
 except ImportError:
     path = os.path.join(lib_dir, 'pysftp-0.2.9-py3-none-any.whl')
