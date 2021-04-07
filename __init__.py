@@ -1,8 +1,12 @@
 import os
 import sys
+from qgis.core import QgsApplication
 
+dll_dir = os.path.join(QgsApplication.prefixPath(), "..", "Python37/DLLs")
 this_dir = os.path.dirname(os.path.realpath(__file__))
 lib_dir = os.path.join(this_dir, 'lib')
+
+sys.path.append(dll_dir)
 
 libs_name = ["geotiflib-1.0.7-py3-none-any.whl",
              "pycparser-2.20-py2.py3-none-any.whl",
@@ -13,7 +17,6 @@ libs_name = ["geotiflib-1.0.7-py3-none-any.whl",
              "paramiko-2.7.2-py2.py3-none-any.whl",
              "pysftp-0.2.9-py3-none-any.whl",
              "watchdog-2.0.2-py3-none-win_amd64.whl"]
-
 
 for lib in libs_name:
     path = os.path.join(lib_dir, lib)
