@@ -94,8 +94,8 @@ class GeoRectifyTask(threading.Thread):
                 cnopts = pysftp.CnOpts()
                 cnopts.hostkeys = None
                 with pysftp.Connection(uri, username=username, password=password, cnopts=cnopts) as sftp:
-                    with sftp.cd(remote_folder):  # temporarily chdir to public
-                        sftp.put(output_tif, remotepath=remote_folder + "/" + self.name + ".tif")
+                    with sftp.cd(remote_folder):
+                        sftp.put(output_tif, remotepath=self.name + ".tif")
 
                 # Remove intermediate file (if requested)
                 if self.options["remove_file_after"] == Qt.Checked:
