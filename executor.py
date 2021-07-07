@@ -78,8 +78,8 @@ class GeoRectifyTask(threading.Thread):
             auth_cfg = QgsAuthMethodConfig()
             auth_manager.loadAuthenticationConfig(auth_id, auth_cfg, True)
             if auth_cfg.id():
-                username = auth_cfg.config('username', '')
-                password = auth_cfg.config('password', '')
+                username = auth_cfg.config('username', '').strip()
+                password = auth_cfg.config('password', '').strip()
                 uri = auth_cfg.uri()
                 # call FTP task
                 QgsMessageLog.logMessage(f"GeoRectifyTask.run, URI: %s" % str(uri), tag="OAW",
