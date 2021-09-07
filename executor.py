@@ -93,15 +93,17 @@ class GeoRectifyTask(threading.Thread):
                 remote_folder = self.options["remote_folder"] if "remote_folder" in self.options else "public"
                 cnopts = pysftp.CnOpts()
                 cnopts.hostkeys = None
+                QgsMessageLog.logMessage(f"GeoRectifyTask. Uploading: {output_tif}", tag="OAW",
+                                         level=Qgis.Info)
                 with pysftp.Connection(uri, username=username, password=password, cnopts=cnopts) as sftp:
                     with sftp.cd(remote_folder):
                         sftp.put(output_tif, remotepath=self.name + ".tif")
 
                 # Remove intermediate file (if requested)
-                if self.options["remove_file_after"] == Qt.Checked:
-                    os.remove(output_tif)
-                    QgsMessageLog.logMessage(f"GeoRectifyTask.run, removing intermediate file: %s" % output_tif,
-                                             tag="OAW", level=Qgis.Info)
+                # if self.options["remove_file_after"] == Qt.Checked:
+                #     os.remove(output_tif)
+                #     QgsMessageLog.logMessage(f"GeoRectifyTask.run, removing intermediate file: %s" % output_tif,
+                #                              tag="OAW", level=Qgis.Info)
             else:
                 raise Exception("Failed to extract information from the QGIS authentication manager using authid: %s"
                                 % auth_id)
