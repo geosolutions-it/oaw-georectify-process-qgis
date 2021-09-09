@@ -71,7 +71,11 @@ class GeoRectifyTask(threading.Thread):
                 gdal_threads=self.options["gdal_threads"]
             )
             geo_rectify.on_progress += self.on_progress
-            geo_rectify.process()
+            try:
+                geo_rectify.process()
+            except Exception as e:
+                QgsMessageLog.logMessage(f"{e.args[0]}")
+                raise(e)
 
             auth_id = self.options["remote_authid"]
             auth_manager = QgsApplication.authManager()
