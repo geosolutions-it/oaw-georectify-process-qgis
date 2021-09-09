@@ -100,10 +100,10 @@ class GeoRectifyTask(threading.Thread):
                         sftp.put(output_tif, remotepath=self.name + ".tif")
 
                 # Remove intermediate file (if requested)
-                # if self.options["remove_file_after"] == Qt.Checked:
-                #     os.remove(output_tif)
-                #     QgsMessageLog.logMessage(f"GeoRectifyTask.run, removing intermediate file: %s" % output_tif,
-                #                              tag="OAW", level=Qgis.Info)
+                if self.options["remove_file_after"] == Qt.Checked:
+                    os.remove(output_tif)
+                    QgsMessageLog.logMessage(f"GeoRectifyTask.run, removing intermediate file: %s" % output_tif,
+                                             tag="OAW", level=Qgis.Info)
             else:
                 raise Exception("Failed to extract information from the QGIS authentication manager using authid: %s"
                                 % auth_id)
