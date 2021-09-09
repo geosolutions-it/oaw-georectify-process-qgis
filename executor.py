@@ -76,6 +76,7 @@ class GeoRectifyTask(threading.Thread):
             except Exception as e:
                 QgsMessageLog.logMessage(f"{e.args[0]}")
                 raise(e)
+            QgsMessageLog.logMessage("Process complete")
 
             auth_id = self.options["remote_authid"]
             auth_manager = QgsApplication.authManager()
