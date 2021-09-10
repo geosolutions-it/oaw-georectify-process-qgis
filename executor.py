@@ -109,7 +109,7 @@ class GeoRectifyTask(threading.Thread):
         except Exception as e:
             self.exception = e
             self.set_status('failed', str(e))
-            QgsMessageLog.logMessage(f"GeoRectifyTask.run, exception: %s" % str(e), tag="OAW", level=Qgis.Warning)
+            QgsMessageLog.logMessage(f"GeoRectifyTask.run, exception: %s" % str(e.args[0]), tag="OAW", level=Qgis.Warning)
         self.handlers["on_completed"](self)
         QgsMessageLog.logMessage(f"GeoRectifyTask.run, result: %s" % self.status, tag="OAW", level=Qgis.Info)
         return self.status == 'completed'
