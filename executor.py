@@ -64,6 +64,7 @@ class GeoRectifyTask(threading.Thread):
 
             input_tif = os.path.join(self.options["staging_folder"], self.name + ".tif")
             scripts_folder = os.path.join(QgsApplication.prefixPath(), "..", "Python37/Scripts")
+            QgsMessageLog.logMessage(f"Script path folder is: {scripts_folder} while the default one is C:\\OSGeo4W64\\apps\\Python37\\Scripts\\")
             geo_rectify = GeoRectifyFactory.create(
                 input=input_tif,
                 qgis_scripts=scripts_folder,
