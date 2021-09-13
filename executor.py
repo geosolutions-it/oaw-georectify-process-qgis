@@ -55,6 +55,7 @@ class GeoRectifyTask(threading.Thread):
         return self.status
 
     def on_progress(self, message):
+        QgsMessageLog.logMessage("Progessing", tag="OAW", level=Qgis.Warning)
         self.handlers["on_progress_changed"](self, message)
 
     def run(self):
@@ -71,8 +72,8 @@ class GeoRectifyTask(threading.Thread):
                 gdal_threads=self.options["gdal_threads"]
             )
             geo_rectify.on_progress += self.on_progress
+            QgsMessageLog.logMessage(f"TotalTask Count {geo_rectify.task_count()}", tag="OAW", level=Qgis.Warning)
             geo_rectify.process()
-
             auth_id = self.options["remote_authid"]
             auth_manager = QgsApplication.authManager()
             auth_cfg = QgsAuthMethodConfig()
