@@ -8,7 +8,7 @@ lib_dir = os.path.join(this_dir, 'lib')
 
 sys.path.append(dll_dir)
 
-libs_name = ["geotiflib-1.0.14-py3-none-any"]
+libs_name = ["geotiflib-1.0.14-py3-none-any..whl"]
 
 for lib in libs_name:
     path = os.path.join(lib_dir, lib)
