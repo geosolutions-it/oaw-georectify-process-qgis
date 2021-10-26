@@ -107,9 +107,10 @@ class GeoRectifyTask(threading.Thread):
                                 % auth_id)
             self.set_status('completed', 'done')
         except Exception as e:
+            QgsMessageLog.logMessage(f"Error during Plugin run: {e.args[0]}, {e}", tag="OAW_ERROR", level=Qgis.Info)
             self.exception = e
             self.set_status('failed', str(e))
-            QgsMessageLog.logMessage(f"GeoRectifyTask.run, exception: %s" % str(e), tag="OAW", level=Qgis.Warning)
+            QgsMessageLog.logMessage(f"GeoRectifyTask.run, exception: %s" % str(e), tag="OAW", level=Qgis.Info)
         self.handlers["on_completed"](self)
         QgsMessageLog.logMessage(f"GeoRectifyTask.run, result: %s" % self.status, tag="OAW", level=Qgis.Info)
         return self.status == 'completed'
